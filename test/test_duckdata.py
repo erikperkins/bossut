@@ -4,7 +4,6 @@ from unittest.mock import patch
 from unittest.mock import Mock
 from trip.duckdata import DuckData
 from trip.duckdata import DuckDataException
-from pandas import DataFrame
 from datetime import datetime
 
 
@@ -14,10 +13,9 @@ class TestDuckData(unittest.TestCase):
   @patch('trip.duckdata.os', Mock())
   def setUp(self):
     self.duckdata = DuckData()
-    self.duckdata.connection.sql.return_value.df.return_value = DataFrame({
-      'tpep_pickup_datetime': [1, 2],
-      'tpep_dropoff_datetime': [3, 4]
-    })
+
+    records = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
+    self.duckdata.connection.sql.return_value.fetch_arrow_table.return_value.to_pylist.return_value = records
 
   def tearDown(self):
     # reset mocks
@@ -53,11 +51,8 @@ class TestDuckData(unittest.TestCase):
 
   def test_get_trips(self):
     now = datetime.now()
-    trips = self.duckdata.get_trips(now)
-
-    self.assertEqual(DataFrame, type(trips))
-    self.assertEqual(['tpep_pickup_datetime', 'tpep_dropoff_datetime'], trips.columns.values.tolist())
-    self.assertEqual((2, 2), trips.shape)
+    records = self.duckdata.get_trips(now)
+    self.assertEqual([{'a': 1, 'b': 2}, {'a': 3, 'b': 4}], records)
 
   def test_get_trips_raises_exception(self):
     self.duckdata.query_parquet = Mock()
@@ -67,10 +62,11 @@ class TestDuckData(unittest.TestCase):
       self.duckdata.get_trips(datetime.now())
 
   def test_query_parquet(self):
-    self.duckdata.query_parquet('file', 'SELECT * FROM PARQUET')
+    records = self.duckdata.query_parquet('file', 'SELECT * FROM PARQUET')
 
     parquet = "read_parquet('file.parquet')"
     self.duckdata.connection.sql.assert_called_with(f"SELECT * FROM {parquet}")
+    self.assertEqual([{'a': 1, 'b': 2}, {'a': 3, 'b': 4}], records)
 
   @patch('trip.duckdata.Minio.__new__')
   def test_init_minio_raises_exception(self, mock_minio_client):

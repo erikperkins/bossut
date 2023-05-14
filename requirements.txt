@@ -10,3 +10,4 @@ sentry-sdk==1.17.0
 six==1.16.0
 urllib3==1.26.15
 minio==7.1.14
+pyarrow==11.0.0
