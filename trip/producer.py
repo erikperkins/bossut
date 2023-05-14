@@ -1,6 +1,7 @@
 from kafka import KafkaProducer
 from trip.duckdata import DuckData
 from datetime import datetime
+from pytz import timezone
 from json import dumps
 
 BOOTSTRAP_SERVER = "kafka-service.kafka.svc.cluster.local:9092"
@@ -32,7 +33,7 @@ class TripProducer:
     Query current minute of trips from parquet file in MinIO.
     Publish trip events to Kafka.
     """
-    now = datetime.now()
+    now = datetime.now(timezone('US/Eastern'))
     results = self.duckdata.get_trips(now)
 
     columns = {'tpep_pickup_datetime': 'str', 'tpep_dropoff_datetime': 'str'}
