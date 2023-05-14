@@ -48,9 +48,20 @@ class DuckData():
     file = f'yellow_tripdata_2022-{now.month:02d}'
     query = f"""
         SELECT
-          tpep_pickup_datetime,
-          tpep_dropoff_datetime,
-          trip_distance,
+          strftime(tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S') as pickup_datetime,
+          strftime(tpep_dropoff_datetime, '%Y-%m-%d %H:%M:%S') as dropoff_datetime,
+          PULocationID as pickup_location_id,
+          DOLocationID as dropoff_location_id,
+          passenger_count,
+          trip_distance,          
+          payment_type,
+          fare_amount,
+          extra,
+          mta_tax,
+          tolls_amount,
+          improvement_surcharge,
+          congestion_surcharge,
+          airport_fee,
           tip_amount
         FROM
           PARQUET
@@ -76,6 +87,6 @@ class DuckData():
     sql = query.replace('PARQUET', parquet)
 
     try:
-      return self.connection.sql(sql).df()
+      return self.connection.sql(sql).fetch_arrow_table().to_pylist()
     except Exception as e:
       raise DuckDataException(e)

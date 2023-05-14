@@ -34,15 +34,11 @@ class TripProducer:
     Publish trip events to Kafka.
     """
     now = datetime.now(timezone('US/Eastern'))
-    results = self.duckdata.get_trips(now)
-
-    columns = {'tpep_pickup_datetime': 'str', 'tpep_dropoff_datetime': 'str'}
-    records = results.astype(columns).to_dict(orient = 'records')
+    records = self.duckdata.get_trips(now)
 
     for record in records:
       try:
         self.producer.send('trips', record)
       except Exception as e:
         raise TripProducerException(f"Failed sending message to Kafka: {e}")
-
 
