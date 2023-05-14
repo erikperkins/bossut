@@ -50,7 +50,18 @@ class DuckData():
         SELECT
           tpep_pickup_datetime,
           tpep_dropoff_datetime,
-          trip_distance,
+          PULocationID,
+          DOLocationID,
+          passenger_count,
+          trip_distance,          
+          payment_type,
+          fare_amount,
+          extra,
+          mta_tax,
+          tolls_amount,
+          improvement_surcharge,
+          congestion_surcharge,
+          airport_fee,
           tip_amount
         FROM
           PARQUET
