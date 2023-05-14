@@ -87,6 +87,7 @@ class TestDuckData(unittest.TestCase):
       DuckData()
 
   @patch('trip.duckdata.os.mkdir')
+  @patch('trip.duckdata.DATA', 'test')
   def test_init_check_data_raises_exception(self, mock_os_mkdir):
     mock_os_mkdir.side_effect = Mock(side_effect = Exception())
 
