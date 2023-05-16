@@ -3,7 +3,7 @@ import sentry_sdk
 from time import sleep
 
 sentry_sdk.init(
-  dsn = "https://227b9b8e415048598e23fb6764f37db3@sentry.cauchy.link/5",
+  dsn = "https://d2ac4e11398b4f1ba34ae288fd866874@sentry.cauchy.link/3",
   traces_sample_rate = 1.0
 )
 
