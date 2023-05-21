@@ -3,6 +3,7 @@ from trip.duckdata import DuckData
 from datetime import datetime
 from pytz import timezone
 from json import dumps
+from time import sleep
 
 BOOTSTRAP_SERVER = "kafka-service.kafka.svc.cluster.local:9092"
 
@@ -36,7 +37,11 @@ class TripProducer:
     now = datetime.now(timezone('US/Eastern'))
     records = self.duckdata.get_trips(now)
 
+    if len(records) == 0:
+      sleep(1)
+
     for record in records:
+      sleep(1 / len(records))
       try:
         self.producer.send('trips', record)
       except Exception as e:
